@@ -16,6 +16,15 @@ st.title(' :bar_chart: Sales Data')
 # adding a padding to the top of the title
 st.markdown('<style>div.block-container {padding-top:irem;}</style>',unsafe_allow_html=True)
 
+#read in data
+@st.cache_data
+def get_data():
+    df = pd.read_csv('./data/cars.csv',index_col=0)
+    return df
+
+
+
+
 
 f1 = st.file_uploader(':file_folder: Upload a file', type=(['csv', 'txt','xlsx','xls']))
 if f1 is not None:
@@ -26,7 +35,11 @@ if f1 is not None:
     # st.write(df)
 else:
     os.chdir(r'C:\Users\USER\Documents\HOLLERTECH FILES\DASHBOARD')
-    df = pd.read_csv("sales_data_sample.csv", encoding = 'unicode_escape') 
+    @st.cache_data
+    def get_data():
+        df = pd.read_csv("sales_data_sample.csv", encoding = 'unicode_escape') 
+        return df
+    df = get_data()
     # st.write(df)
 
 column1, column2 = st.columns((2))
@@ -80,10 +93,36 @@ elif city:
 else:
     filterd_df = df3[df3['COUNTRY'].isin(region) & df3['STATE'].isin(state) & df3['CITY'].isin(city)]
 
+# Product categories
 category_df = filterd_df.groupby(by=['PRODUCTCODE'], as_index=False)['SALES'].sum()
+
+# Top 5 Product by sales
 top_5 = filterd_df.groupby(by=['PRODUCTCODE'])['SALES'].sum().sort_values(ascending=False).head(5)
 product_code = top_5.index.to_numpy()
 sales = top_5.to_numpy()
+
+# calculate KPI's
+average_sales = int(filterd_df['SALES'].mean())
+transaction_count = filterd_df.shape[0]
+total_sales = filterd_df['SALES'].sum()
+# print(f"Total Sales: ${total_sales:,.2f}")
+# earliest_make_year = df_select['make-year'].min()
+#popular_automation = df_select['Automation'].mode()
+
+st.divider()
+first_column, second_column, third_column = st.columns((3))
+
+with first_column:
+    st.subheader("Average Sales:")
+    st.subheader(f"US $ {average_sales:,}")
+with second_column:
+    st.subheader("Number of Transaction:")
+    st.subheader(f"{transaction_count:,} Products")
+with third_column:
+    st.subheader("Total Sales:")
+    st.subheader(f"{total_sales:,}")
+    
+st.divider()
 
 with column1:
     st.subheader("Category wise Sales")
@@ -197,3 +236,22 @@ with st.expander("View Data"):
 # Download orginal DataSet
 csv = df.to_csv(index = False).encode('utf-8')
 st.download_button('Download Data', data = csv, file_name = "Data.csv",mime = "text/csv")
+
+# ---- HIDE STREAMLIT STYLE ----
+st.markdown(
+    """
+    <style>
+    footer {visibility: hidden;}
+    footer:after{
+        content: 'Created by Samson Afolabi';
+        visibility: visible;
+        position: relative;
+        right: 115px;
+    }
+    {
+        background: LightBlue;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
