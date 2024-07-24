@@ -34,7 +34,6 @@ if f1 is not None:
     df = pd.read_csv(filename, encoding = 'unicode_escape')
     # st.write(df)
 else:
-    os.chdir(r'C:\Users\USER\Documents\HOLLERTECH FILES\DASHBOARD')
     @st.cache_data
     def get_data():
         df = pd.read_csv("sales_data_sample.csv", encoding = 'unicode_escape') 
