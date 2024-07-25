@@ -10,20 +10,11 @@ import plotly.express as px
 # this is for jupyter notebook to show the plot in the notebook itself instead of opening a new window
 # %matplotlib inline
 
-st.set_page_config(page_title='Sales Data!!!', page_icon=':bar_chart:', layout='wide')
-st.title(' :bar_chart: Sales Data')
+st.set_page_config(page_title='Sales Analysis!!!', page_icon=':bar_chart:', layout='wide')
+st.title(' :bar_chart: Sales Analysis')
 
 # adding a padding to the top of the title
 st.markdown('<style>div.block-container {padding-top:irem;}</style>',unsafe_allow_html=True)
-
-#read in data
-@st.cache_data
-def get_data():
-    df = pd.read_csv('./data/cars.csv',index_col=0)
-    return df
-
-
-
 
 
 f1 = st.file_uploader(':file_folder: Upload a file', type=(['csv', 'txt','xlsx','xls']))
@@ -34,7 +25,7 @@ if f1 is not None:
     df = pd.read_csv(filename, encoding = 'unicode_escape')
     # st.write(df)
 else:
-    os.chdir(r'C:\Users\USER\Documents\HOLLERTECH FILES\DASHBOARD')
+    # os.chdir(r'C:\Users\USER\Documents\HOLLERTECH FILES\DASHBOARD')
     @st.cache_data
     def get_data():
         df = pd.read_csv("sales_data_sample.csv", encoding = 'unicode_escape') 
@@ -42,7 +33,7 @@ else:
     df = get_data()
     # st.write(df)
 
-column1, column2 = st.columns((2))
+
 df['ORDERDATE'] = pd.to_datetime(df['ORDERDATE'])
 
 #Getting the min and max date
@@ -117,13 +108,14 @@ with first_column:
     st.subheader(f"US $ {average_sales:,}")
 with second_column:
     st.subheader("Number of Transaction:")
-    st.subheader(f"{transaction_count:,} Products")
+    st.subheader(f"{transaction_count:,}")
 with third_column:
     st.subheader("Total Sales:")
-    st.subheader(f"{total_sales:,}")
+    st.subheader(f"US $ {total_sales:,}")
     
 st.divider()
 
+column1, column2 = st.columns((2))
 with column1:
     st.subheader("Category wise Sales")
     fig = px.bar(category_df, x = "PRODUCTCODE", y = "SALES", text = ['${:,.2f}'.format(x) for x in category_df["SALES"]],
